@@ -5,14 +5,26 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <stdlib.h>
 #define PORT 8080
+
+typedef struct
+{
+  int num1;
+  int num2;
+} nums;
 
 int main(int argc, char const *argv[])
 {
   int sock = 0, valread;
   struct sockaddr_in serv_addr;
-  char *hello = "Hello from client";
-  char buffer[1024] = {0};
+  nums payload;
+
+  if (argc != 3)
+  {
+    printf("You need to execute like this: ./client num1 num2\n");
+    exit(1);
+  }
 
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
   {
@@ -38,9 +50,10 @@ int main(int argc, char const *argv[])
     return -1;
   }
 
-  send(sock, hello, strlen(hello), 0);
-  printf("Hello message sent\n");
-  valread = read(sock, buffer, 1024);
-  printf("%s\n", buffer);
+  payload.num1 = atoi(argv[1]);
+  payload.num2 = atoi(argv[2]);
+
+  printf("%d, %d\n", payload.num1, payload.num2);
+
   return 0;
 }
