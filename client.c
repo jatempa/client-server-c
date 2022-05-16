@@ -60,5 +60,7 @@ int main(int argc, char const *argv[])
     perror("Error: sending two values to server");
   }
 
+  close(sock);
+
   return 0;
 }

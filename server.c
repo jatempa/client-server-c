@@ -67,5 +67,6 @@ int main(int argc, char const *argv[])
 
   printf("Received from client num1 = %d, num2 = %d\n", payload.num1, payload.num2);
 
+  close(new_socket);
   return 0;
 }
