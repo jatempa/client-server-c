@@ -53,7 +53,12 @@ int main(int argc, char const *argv[])
   payload.num1 = atoi(argv[1]);
   payload.num2 = atoi(argv[2]);
 
-  printf("%d, %d\n", payload.num1, payload.num2);
+  printf("Send to server num1 = %d, num2 = %d\n", payload.num1, payload.num2);
+
+  if (send(sock, &payload, sizeof(payload), 0) == -1)
+  {
+    perror("Error: sending two values to server");
+  }
 
   return 0;
 }

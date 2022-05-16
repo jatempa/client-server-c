@@ -8,12 +8,19 @@
 #include <unistd.h>
 #define PORT 8080
 
+typedef struct
+{
+  int num1;
+  int num2;
+} nums;
+
 int main(int argc, char const *argv[])
 {
   int server_fd, new_socket, valread;
   struct sockaddr_in address;
   int opt = 1;
   int addrlen = sizeof(address);
+  nums payload;
 
   // Creating socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -51,6 +58,14 @@ int main(int argc, char const *argv[])
     perror("accept");
     exit(EXIT_FAILURE);
   }
+
+  if (read(new_socket, &payload, sizeof(payload)) == 1)
+  {
+    perror("Error: receiving data\n");
+    exit(1);
+  }
+
+  printf("Received from client num1 = %d, num2 = %d\n", payload.num1, payload.num2);
 
   return 0;
 }
