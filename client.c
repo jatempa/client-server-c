@@ -6,13 +6,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdlib.h>
-#define PORT 8080
+#include "custom_types.h"
 
-typedef struct
-{
-  int num1;
-  int num2;
-} nums;
+#define PORT 8080
 
 int main(int argc, char const *argv[])
 {
