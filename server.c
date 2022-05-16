@@ -53,20 +53,24 @@ int main(int argc, char const *argv[])
     exit(EXIT_FAILURE);
   }
 
-  if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+  while (1)
   {
-    perror("accept");
-    exit(EXIT_FAILURE);
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+    {
+      perror("accept");
+      exit(EXIT_FAILURE);
+    }
+
+    if (read(new_socket, &payload, sizeof(payload)) == 1)
+    {
+      perror("Error: receiving data\n");
+      exit(1);
+    }
+
+    printf("Received from client num1 = %d, num2 = %d\n", payload.num1, payload.num2);
+
+    close(new_socket);
   }
 
-  if (read(new_socket, &payload, sizeof(payload)) == 1)
-  {
-    perror("Error: receiving data\n");
-    exit(1);
-  }
-
-  printf("Received from client num1 = %d, num2 = %d\n", payload.num1, payload.num2);
-
-  close(new_socket);
   return 0;
 }
