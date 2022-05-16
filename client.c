@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 
   if (argc != 3)
   {
-    printf("You need to execute like this: ./client num1 num2\n");
+    printf("usage: ./client <first_number> <second_number>\n");
     exit(1);
   }
 
