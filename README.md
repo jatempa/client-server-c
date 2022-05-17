@@ -5,4 +5,4 @@
 3. Run server process in the terminal: `$ ./server`
 4. Open a new terminal and run script: `$ ./requests.sh`
 
-#### Note: Set execution permission for requests.sh file `sudo chmod a+x requests.sh`
+**Note**: Set execution permission for `requests.sh` file `sudo chmod a+x requests.sh`
