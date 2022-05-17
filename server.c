@@ -6,9 +6,12 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "custom_types.h"
 
 #define PORT 8080
+
+void *addition(void *);
 
 int main(int argc, char const *argv[])
 {
@@ -17,6 +20,8 @@ int main(int argc, char const *argv[])
   int opt = 1;
   int addrlen = sizeof(address);
   nums payload;
+  pthread_t thid_addition;
+  int *addition_result;
 
   // Creating socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -65,8 +70,33 @@ int main(int argc, char const *argv[])
 
     printf("Received from client num1 = %d, num2 = %d\n", payload.num1, payload.num2);
 
+    if (pthread_create(&thid_addition, NULL, &addition, &payload))
+    {
+      printf("Error: Addition Thread was not created");
+      exit(-1);
+    }
+
+    pthread_join(thid_addition, (void *)&addition_result);
+
+    int addition_r = *(int *)addition_result;
+
+    if (send(new_socket, &addition_r, sizeof(addition_r), 0) == -1)
+    {
+      printf("Error: Addition result was not sent");
+    }
+
     close(new_socket);
   }
 
   return 0;
+}
+
+void *addition(void *args)
+{
+  nums *payload = (nums *)args;
+  int *result = malloc(sizeof(int));
+
+  *result = payload->num1 + payload->num2;
+
+  return result;
 }
