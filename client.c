@@ -15,7 +15,8 @@ int main(int argc, char const *argv[])
   int sock = 0, valread;
   struct sockaddr_in serv_addr;
   nums payload;
-  int addition_result;
+  int addition_result, subtraction_result, multiplication_result;
+  float division_result;
 
   if (argc != 3)
   {
@@ -62,7 +63,25 @@ int main(int argc, char const *argv[])
     perror("Error: receiving two values from server with addition result");
   }
 
+  if (recv(sock, &subtraction_result, sizeof(int), 0) == -1)
+  {
+    perror("Error: receiving two values from server with subtraction result");
+  }
+
+  if (recv(sock, &multiplication_result, sizeof(int), 0) == -1)
+  {
+    perror("Error: receiving two values from server with multiplication result");
+  }
+
+  if (recv(sock, &division_result, sizeof(int), 0) == -1)
+  {
+    perror("Error: receiving two values from server with division result");
+  }
+
   printf("Addition: %d + %d = %d\n", payload.num1, payload.num2, addition_result);
+  printf("Subtraction: %d - %d = %d\n", payload.num1, payload.num2, subtraction_result);
+  printf("Multiplication: %d x %d = %d\n", payload.num1, payload.num2, multiplication_result);
+  printf("Division: %d / %d = %.4f\n", payload.num1, payload.num2, division_result);
 
   close(sock);
 

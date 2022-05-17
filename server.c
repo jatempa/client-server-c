@@ -10,8 +10,12 @@
 #include "custom_types.h"
 
 #define PORT 8080
+#define MAX_THREADS 50
 
 void *addition(void *);
+void *subtraction(void *);
+void *multiplication(void *);
+void *division(void *);
 
 int main(int argc, char const *argv[])
 {
@@ -20,8 +24,10 @@ int main(int argc, char const *argv[])
   int opt = 1;
   int addrlen = sizeof(address);
   nums payload;
-  pthread_t thid_addition;
-  int *addition_result;
+  pthread_t thid_addition[MAX_THREADS], thid_subtraction[MAX_THREADS],
+      thid_multiplication[MAX_THREADS], thid_division[MAX_THREADS];
+  int *addition_result, *subtraction_result, *multiplication_result, *division_result;
+  int count_threads = 0;
 
   // Creating socket file descriptor
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -70,19 +76,69 @@ int main(int argc, char const *argv[])
 
     printf("Received from client num1 = %d, num2 = %d\n", payload.num1, payload.num2);
 
-    if (pthread_create(&thid_addition, NULL, &addition, &payload))
+    if (pthread_create(&thid_addition[count_threads], NULL, &addition, &payload))
     {
       printf("Error: Addition Thread was not created");
       exit(-1);
     }
 
-    pthread_join(thid_addition, (void *)&addition_result);
+    if (pthread_create(&thid_subtraction[count_threads], NULL, &subtraction, &payload))
+    {
+      printf("Error: Subtraction Thread was not created");
+      exit(-1);
+    }
+
+    if (pthread_create(&thid_multiplication[count_threads], NULL, &multiplication, &payload))
+    {
+      printf("Error: Multiplication Thread was not created");
+      exit(-1);
+    }
+
+    if (pthread_create(&thid_division[count_threads], NULL, &division, &payload))
+    {
+      printf("Error: Division Thread was not created");
+      exit(-1);
+    }
+
+    pthread_join(thid_addition[count_threads], (void *)&addition_result);
+    pthread_join(thid_subtraction[count_threads], (void *)&subtraction_result);
+    pthread_join(thid_multiplication[count_threads], (void *)&multiplication_result);
+    pthread_join(thid_division[count_threads], (void *)&division_result);
 
     int addition_r = *(int *)addition_result;
+    int subtraction_r = *(int *)subtraction_result;
+    int multiplication_r = *(int *)multiplication_result;
+    float division_r = *(float *)division_result;
 
     if (send(new_socket, &addition_r, sizeof(addition_r), 0) == -1)
     {
       printf("Error: Addition result was not sent");
+    }
+
+    if (send(new_socket, &subtraction_r, sizeof(subtraction_r), 0) == -1)
+    {
+      printf("Error: Subtraction result was not sent");
+    }
+
+    if (send(new_socket, &multiplication_r, sizeof(multiplication_r), 0) == -1)
+    {
+      printf("Error: Multiplication result was not sent");
+    }
+
+    if (send(new_socket, &division_r, sizeof(division_r), 0) == -1)
+    {
+      printf("Error: Division result was not sent");
+    }
+
+    free(addition_result);
+    free(subtraction_result);
+    free(multiplication_result);
+    free(division_result);
+
+    count_threads++;
+    if (count_threads > MAX_THREADS)
+    {
+      count_threads = 0;
     }
 
     close(new_socket);
@@ -97,6 +153,36 @@ void *addition(void *args)
   int *result = malloc(sizeof(int));
 
   *result = payload->num1 + payload->num2;
+
+  return result;
+}
+
+void *subtraction(void *args)
+{
+  nums *payload = (nums *)args;
+  int *result = malloc(sizeof(int));
+
+  *result = payload->num1 - payload->num2;
+
+  return result;
+}
+
+void *multiplication(void *args)
+{
+  nums *payload = (nums *)args;
+  int *result = malloc(sizeof(int));
+
+  *result = payload->num1 * payload->num2;
+
+  return result;
+}
+
+void *division(void *args)
+{
+  nums *payload = (nums *)args;
+  float *result = malloc(sizeof(float));
+
+  *result = (float)payload->num1 / payload->num2;
 
   return result;
 }
