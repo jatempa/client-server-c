@@ -17,6 +17,8 @@ void *subtraction(void *);
 void *multiplication(void *);
 void *division(void *);
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 int main(int argc, char const *argv[])
 {
   int server_fd, new_socket, valread;
@@ -152,7 +154,9 @@ void *addition(void *args)
   nums *payload = (nums *)args;
   int *result = malloc(sizeof(int));
 
+  pthread_mutex_lock(&mutex);
   *result = payload->num1 + payload->num2;
+  pthread_mutex_unlock(&mutex);
 
   return result;
 }
@@ -162,7 +166,9 @@ void *subtraction(void *args)
   nums *payload = (nums *)args;
   int *result = malloc(sizeof(int));
 
+  pthread_mutex_lock(&mutex);
   *result = payload->num1 - payload->num2;
+  pthread_mutex_unlock(&mutex);
 
   return result;
 }
@@ -172,7 +178,9 @@ void *multiplication(void *args)
   nums *payload = (nums *)args;
   int *result = malloc(sizeof(int));
 
+  pthread_mutex_lock(&mutex);
   *result = payload->num1 * payload->num2;
+  pthread_mutex_unlock(&mutex);
 
   return result;
 }
@@ -182,7 +190,9 @@ void *division(void *args)
   nums *payload = (nums *)args;
   float *result = malloc(sizeof(float));
 
+  pthread_mutex_lock(&mutex);
   *result = (float)payload->num1 / payload->num2;
+  pthread_mutex_unlock(&mutex);
 
   return result;
 }
