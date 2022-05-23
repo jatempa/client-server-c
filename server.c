@@ -8,6 +8,8 @@
 #include "custom_types.h"
 
 #define PORT 8080
+#define BACKLOG 10 // max number connections allowed
+#define MAX_THREADS 50
 
 void *createStudent(void *);
 
@@ -47,7 +49,7 @@ int main(int argc, char const *argv[])
     exit(EXIT_FAILURE);
   }
 
-  if (listen(server_fd, 3) < 0)
+  if (listen(server_fd, BACKLOG) < 0)
   {
     perror("listen");
     exit(EXIT_FAILURE);
