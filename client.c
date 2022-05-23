@@ -1,5 +1,3 @@
-// Client side C/C++ program to demonstrate Socket
-// programming
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,19 +8,22 @@
 
 #define PORT 8080
 
+student createStudent()
+{
+  student item;
+
+  printf("Introduce el nombre:\n");
+  scanf("%[^\n]%*c", item.firstName);
+  printf("Introduce el apellido:\n");
+  scanf("%[^\n]%*c", item.lastName);
+
+  return item;
+}
+
 int main(int argc, char const *argv[])
 {
   int sock = 0, valread;
   struct sockaddr_in serv_addr;
-  nums payload;
-  int addition_result, subtraction_result, multiplication_result;
-  float division_result;
-
-  if (argc != 3)
-  {
-    printf("usage: ./client <first_number> <second_number>\n");
-    exit(1);
-  }
 
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
   {
@@ -48,40 +49,12 @@ int main(int argc, char const *argv[])
     return -1;
   }
 
-  payload.num1 = atoi(argv[1]);
-  payload.num2 = atoi(argv[2]);
+  student st = createStudent();
 
-  printf("Send to server num1 = %d, num2 = %d\n", payload.num1, payload.num2);
-
-  if (send(sock, &payload, sizeof(payload), 0) == -1)
+  if (send(sock, &st, sizeof(st), 0) == -1)
   {
     perror("Error: sending two values to server");
   }
-
-  if (recv(sock, &addition_result, sizeof(int), 0) == -1)
-  {
-    perror("Error: receiving two values from server with addition result");
-  }
-
-  if (recv(sock, &subtraction_result, sizeof(int), 0) == -1)
-  {
-    perror("Error: receiving two values from server with subtraction result");
-  }
-
-  if (recv(sock, &multiplication_result, sizeof(int), 0) == -1)
-  {
-    perror("Error: receiving two values from server with multiplication result");
-  }
-
-  if (recv(sock, &division_result, sizeof(int), 0) == -1)
-  {
-    perror("Error: receiving two values from server with division result");
-  }
-
-  printf("Addition: %d + %d = %d\n", payload.num1, payload.num2, addition_result);
-  printf("Subtraction: %d - %d = %d\n", payload.num1, payload.num2, subtraction_result);
-  printf("Multiplication: %d x %d = %d\n", payload.num1, payload.num2, multiplication_result);
-  printf("Division: %d / %d = %.4f\n", payload.num1, payload.num2, division_result);
 
   close(sock);
 
